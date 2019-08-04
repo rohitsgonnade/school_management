@@ -6,10 +6,10 @@
 
     {% csrf_token %}
     <div class="form-group">
-    {{form}}
-</div>
+        {{form}}
+    </div>
 
-    <button type="submit" class="btn btn-primary">tp</button>
+    <button type="submit" class="btn btn-primary">Save Marks</button>
 
 </form>
 
@@ -26,14 +26,14 @@
 
         var subject = "{{ subject }}"  // passes by view create_attendance_api
 
-        
+
 
         console.log("click");
 
         $.ajax({
             type: "POST",
             url: "/save_marks/" + subject,  //  I want to use reverse url lookup like {url 'xyz' } but it is throwing errors saying 'xyz' is not a view
-         
+
 
             success: function (json) {
                 if (json.length == 0) {
