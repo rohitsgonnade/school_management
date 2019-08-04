@@ -2,7 +2,7 @@ from django import forms
 from .models import Subject, Exam, TeacherProfile, User, Teacher_Subject, StudentProfile, Student_Subject, Attendance, Exam
 from .serializers import TeacherProfileSerializer
 
-#not used
+
 class Exam_ModelForm(forms.ModelForm):
 
     choice = []
@@ -26,7 +26,6 @@ class Exam_ModelForm(forms.ModelForm):
         self.choice = Teacher_Subject.objects.all()
 
 
-#used for creating exam
 class Exam_Form(forms.Form):
     name = forms.CharField(max_length=200, required=True,
                            widget=forms.TextInput(attrs={
@@ -71,7 +70,7 @@ class Exam_Form(forms.Form):
         self.fields['subject'].queryset = Subject.objects.filter(
             subject_id__in=Teacher_Subject.objects.filter(teacher_id=user.pk).values('subject_id'))
 
-#used for creating attendance
+
 class Create_Attendance_Form(forms.Form):
     subject = forms.ModelChoiceField(queryset=None, required=True,
 
@@ -92,7 +91,7 @@ class Create_Attendance_Form(forms.Form):
         self.fields['subject'].queryset = Subject.objects.filter(
             subject_id__in=Teacher_Subject.objects.filter(teacher_id = user.pk).values('subject_id'))
 
-#used for saving attendance
+
 class student_attendance_form(forms.Form):
 
     attendance_id = forms.ModelChoiceField(queryset=None, required=True, widget=forms.Select(attrs={
@@ -117,8 +116,8 @@ class student_attendance_form(forms.Form):
         self.fields['attendance_id'].queryset = Attendance.objects.filter(subject_id = self.subject_id).order_by('-date_of_lecture')#desc order first 10
 
 
-#for saving marks
-class save_marks_form(forms.Form):
+
+class student_exam_form(forms.Form):
     
     exam_id = forms.ModelChoiceField(queryset=None, required=True, widget=forms.Select(attrs={
                                          "class": "form-control",
@@ -128,11 +127,11 @@ class save_marks_form(forms.Form):
 
     def __init__(self,user,*args, **kwargs):
         self.subject_id = kwargs.pop('subject_id')
-        super(save_marks_form, self).__init__(*args, **kwargs)
+        super(student_exam_form, self).__init__(*args, **kwargs)
         students = StudentProfile.objects.filter(
-            user__in = Student_Subject.objects.filter(subject_id = self.subject_id).values('student_id'))
+            user__in = Student_Subject.objects.filter(subject_id = "BSC_CS_101").values('student_id'))
         
-        self.fields['exam_id'].queryset = Exam.objects.filter(subject_id = self.subject_id).order_by("-exam_date") 
+        self.fields['exam_id'].queryset = Exam.objects.filter(subject_id = "BSC_CS_101").order_by("-exam_date") 
 
 
         #dynamically create Integer field for each student
