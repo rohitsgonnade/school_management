@@ -6,8 +6,15 @@
 
     {% csrf_token %}
     <div class="form-group">
-        {{ form }}
+        <label>Select attendance </label>
+        {{ form.attendance_id }}
     </div>
+
+    <div class="form-group">
+       <label>Students</label> <br/>
+        {{ form.students }}
+    </div>
+    
 
   
 

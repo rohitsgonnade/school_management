@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h5> Select Subject to proceed</h5> <br/>
+
+<div class="row">
+    {% for subject in subjects %}
+    <div class="col-md-5">
+
+        <div class="card mb-3">
+
+            <div class="card-body">
+
+                <h5 class="card-title">{{ subject.subject_id }}</h5>
+
+                <p class="card-text"> Name : {{ subject.subject_name }}</p>
+
+                <a href = "/save_marks/{{subject.subject_id}}"  class="btn btn-primary"> Add marks</a>
+
+                <a href = "/save_attendance/{{subject.subject_id}}"  class="btn btn-primary"> Add previous attendance</a>
+            </div>
+
+        </div>
+
+    </div>
+
+    {% endfor %}
+</div>
+
+
+{%endblock%}
