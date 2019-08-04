@@ -2,11 +2,13 @@ from django.contrib.auth.decorators import login_required
 from rest_framework.decorators import api_view, permission_classes
 from django.shortcuts import render, redirect, reverse
 
-from .forms import Exam_Form, Create_Attendance_Form, student_attendance_form, student_exam_form
+from .forms import Exam_Form, Create_Attendance_Form, student_attendance_form, save_marks_form
 
 # Create your views here.
 
 from rest_framework import viewsets, permissions, generics
+
+from school_data.serializer import SubjectSerializer, Subject
 
 from .serializers import LoginUserSerializer, UserSerializer, ParentProfileSerializer, StudentProfileSerializer, TeacherProfileSerializer, ExamSerializer
 
@@ -15,6 +17,8 @@ from django.http import JsonResponse
 from .models import StudentProfile, TeacherProfile, ParentProfile, User, Exam, Attendance, Student_Attendance, Exam_Marks
 
 import datetime
+
+
 
 
 # login purpose
@@ -33,7 +37,8 @@ import datetime
 
 
 # API to return user data of the logged in user
-# use this API to determine if the user is logged in and retrieve their token for performing user specific api calls.
+# use this API to determine if the user is logged in and retrieve their token 
+# for performing user specific api calls.
 class UserAPI(generics.RetrieveAPIView):
     permission_classes = [permissions.IsAuthenticated, ]
     serializer_class = UserSerializer
@@ -42,7 +47,7 @@ class UserAPI(generics.RetrieveAPIView):
         return self.request.user
 
 
-# this is actually used not UserAPI, UserAPI don't work while getting user data from rest using React
+# this is actually used , not UserAPI, UserAPI don't work while getting user data from rest using React
 @login_required(login_url='/')
 @api_view(['GET'])
 def current_user_API(request):
@@ -52,6 +57,7 @@ def current_user_API(request):
 
 
 # only after login
+#homepages as per different users
 @api_view(['GET'])
 @login_required(login_url='/')
 def after_loginAPI(request):
@@ -75,7 +81,9 @@ def after_loginAPI(request):
     return render(request, "home.html", context)
 
 
-# @login_required(login_url='http://localhost:8000/')
+
+#get all parents
+#not used in the project
 @login_required(login_url='/')
 @api_view(['GET'])
 def get_parents(request):
@@ -85,6 +93,8 @@ def get_parents(request):
         return JsonResponse(serializer.data, safe=False)
 
 
+#to get list of children in parent home page
+#using ajax call, list is retrieved and displayed
 @login_required(login_url='/')
 @api_view(['GET'])
 def get_children(request):
@@ -105,8 +115,51 @@ def get_children(request):
             return render(request, "no_access.html")
 
 
+#to get list of subjetxs
+#at this point this is used only for teacher but can be readily used for students
+@api_view(['GET'])
 @login_required(login_url='/')
-@api_view(['POST'])
+def get_subjects(request, pk):
+
+    if request.method == 'GET':
+
+        role = request.user.role
+
+        # parent will send user id of student as pk,
+        # student will send its own id as pk
+
+        # teacher will send its own id as pk
+
+        if role == 'p' or role == 's':  # if parent or student
+            # pk is user id of student
+
+            student = StudentProfile.objects.get(user=User.objects.get(pk=pk))
+
+            serializer = StudentProfileSerializer(student, many=False)
+
+        else:  # teacher can see exams of the subjects he/she teach
+            teacher = TeacherProfile.objects.get(user=User.objects.get(pk=pk))
+
+            serializer = TeacherProfileSerializer(teacher, many=False)
+
+        #get all subjects
+        subject = serializer.data['subject_id']
+
+        subjects = Subject.objects.filter(subject_id__in = subject)
+        
+        serializer = SubjectSerializer(subjects, many = True)
+
+        data_context = serializer.data
+
+        return render(request, "subjects.html", { "subjects" :data_context })
+
+        # directly go to the link and see the response
+        #return JsonResponse(serializer.data, safe=False)
+
+
+#used for creating exam
+@login_required(login_url='/')
+@api_view(['GET','POST'])
 def create_exam_API(request, pk):
 
     form = Exam_Form(request.user)
@@ -118,24 +171,25 @@ def create_exam_API(request, pk):
     # exam.created_by = TeacherProfile.objects.get(user = User.objects.get(pk = pk))
     # exam.save()
 
-    if request.method == "POST" and request.user.role == 't':
-        form = Exam_Form(request.user, request.POST)
+    if request.user.role == 't':
+        if request.method == "POST"  :
+            form = Exam_Form(request.user, request.POST)
 
-        if form.is_valid():
+            if form.is_valid():
 
-            exam = Exam(
-                name=form.cleaned_data["name"],
-                exam_date=form.cleaned_data["exam_date"],
-                subject_id=form.cleaned_data["subject"],
-                exam_time=form.cleaned_data["exam_time"],
-                max_marks=form.cleaned_data["max_marks"],
-                created_by=TeacherProfile.objects.get(
-                    user=User.objects.get(username=request.user.username)),
-            )
+                exam = Exam(
+                    name=form.cleaned_data["name"],
+                    exam_date=form.cleaned_data["exam_date"],
+                    subject_id=form.cleaned_data["subject"],
+                    exam_time=form.cleaned_data["exam_time"],
+                    max_marks=form.cleaned_data["max_marks"],
+                    created_by=TeacherProfile.objects.get(
+                        user=User.objects.get(username=request.user.username)),
+                )
 
-            exam.save()
+                exam.save()
 
-            return redirect('home')
+                return redirect('home')
     else:
         return render(request, "no_access.html")
 
@@ -144,6 +198,7 @@ def create_exam_API(request, pk):
     return render(request, "create_exam.html", context)
 
 
+#fetch exams on and later todays date
 @api_view(['GET'])
 @login_required(login_url='/')
 def get_upcoming_exams(request, pk):
@@ -189,7 +244,10 @@ def get_upcoming_exams(request, pk):
         # return JsonResponse(serializer.data, safe=False)
 
 
+
+#create attendace and redirect to save_attendance 
 @login_required(login_url="/")
+@api_view(["GET","POST"])
 def create_attendance_API(request):
     form = Create_Attendance_Form(request.user)
 
@@ -218,9 +276,9 @@ def create_attendance_API(request):
     }
     return render(request, "create_attendance.html", context)
 
-
+#save attendance 
 @login_required(login_url="/")
-@api_view(["POST"])
+@api_view(["GET","POST"])
 def student_attendance_view(request, pk):
     form = student_attendance_form(request.user, subject_id=pk)
 
@@ -256,27 +314,32 @@ def student_attendance_view(request, pk):
 
     return render(request, "student_attendance.html", context)
 
+#save marks for exam
+@login_required(login_url="/")
+@api_view(["GET","POST"])
+def save_marks_view(request,pk):
+    form = save_marks_form(request.user , subject_id= pk)
 
-def student_exam_view(request,pk):
-    form = student_exam_form(request.user , subject_id=pk)
+    if request.user.role == 't':
+        if request.method == "POST":
 
-    if request.method == "POST":
+            form = save_marks_form(
+                request.user, request.POST , subject_id= pk)
 
-        form = student_exam_form(
-            request.user, request.POST , subject_id=pk)
+            if form.is_valid():
+                
+                for field in list(form.fields)[1:]:
+                    marks = Exam_Marks(
+                        exam_id = form.cleaned_data["exam_id"],
+                        student_id = StudentProfile.objects.get(user = field[0]),
+                        marks_obtained = form.cleaned_data[field]
+                    )
 
-        if form.is_valid():
-            
-            for field in list(form.fields)[1:]:
-                marks = Exam_Marks(
-                    exam_id = form.cleaned_data["exam_id"],
-                    student_id = StudentProfile.objects.get(user = field[0]),
-                    marks_obtained = form.cleaned_data[field]
-                )
+                    marks.save()
 
-                marks.save()
-
-            return redirect('home')
+                return redirect('home')
+    else:
+        return render(request, "no_access.html")
 
     context = {"form": form, }
 
