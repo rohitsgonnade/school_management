@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<form action = "/create_exam/{{user.pk}}" method ="post">
+
+    {% csrf_token %}
+    <div class="form-group">
+       <label>Name</label> {{ form.name }}
+    </div>
+    <div class="form-group">
+     <label>Exam Date</label><br/>  {{ form.exam_date }}
+    </div>
+    <div class="form-group">
+      <label> Select Subject</label>  {{ form.subject }}
+    </div>
+    <div class="form-group">
+      <label>Exam Time</label>  {{ form.exam_time }}
+    </div>
+    <div class="form-group">
+       <labe> Maximum Marks</labe> {{ form.max_marks }}
+    </div>
+    
+    <button type ="submit" class = "btn btn-primary">Create Exam</button>
+
+</form>
+
+{% endblock %}

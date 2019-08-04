@@ -1,0 +1,32 @@
+{% extends  'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+
+    <div class="col-md-4">
+
+        <div class="card-body">
+            <h5 class="card-title">Log In</h5>
+
+            <form method="post">
+                {% csrf_token %}
+                <input type="hidden" name="next" value="{{ next }}">
+                <!-- next will be /home  bcoz it is set in settings.py-->
+                <label for="id_username" class="col-form-label  requiredField">
+                    Username<span class="asteriskField">*</span> </label>
+                <div class=""> <input type="text" name="username" id="id_username" autofocus="" required=""
+                        class="textinput textInput form-control" minlength="1"> </div>
+
+                <label for="id_password" class="col-form-label  requiredField">
+                    Password<span class="asteriskField">*</span> </label>
+                <div class=""> <input type="password" name="password" id="id_password" required=""
+                        class="textinput textInput form-control" minlength="8" >
+                </div>
+                <br/>
+                <button type="submit" class="btn btn-primary btn-block">Log in</button>
+            </form>
+        </div>
+    </div>  
+
+
+{% endblock %}

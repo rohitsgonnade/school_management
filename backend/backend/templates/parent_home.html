@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+
+<div class="row" id="child_cards">
+
+    <!-- ajax will add childrens list here --->
+
+</div>
+
+
+<!---<button onclick="getChild()">Childrens</button>  -->
+
+<table id="children_table">
+
+</table>
+
+{% endblock %}
+
+{% block javascript %}
+
+<script>
+
+    $(document).ready(function () {
+        //   function getChild() {
+        var username = "{{ user.get_username}}"
+
+        console.log("click");
+
+        $.ajax({
+            type: "GET",
+            url: "/get_children/",  //  I want to use reverse url lookup like {url 'xyz' } but it is throwing errors saying 'xyz' is not a view
+            data: { "username": username },
+
+            success: function (json) {
+                if (json.length == 0) {
+
+                    $("#children_table").append('<tr><td> No Data </td></tr>');
+                }
+                else {
+                    //if double is clicked again then api will be called again and same children name will be
+                    //added in new row
+                    //so first clear the table and then render new data
+                    // $("#children_table").empty();
+                    /* $.each(json, function (i, child) {
+                         $("#children_table").append('<tr><td>' + child.first_name + '  ' + child.last_name + '</td> </tr>');
+                     });
+                     */
+                    $.each(json, function (i, child) {
+
+
+                        $("#child_cards").append('<div class= "col-md-4" > \
+                         <div class= "card mb-2" > <div class="card-body"> \
+                        <h2 class="card-title">' +
+                            child.first_name + ' ' + child.last_name + ' </h2>  \
+                            <h6 class="card-title"> Department : ' +
+                            child.department +
+
+                            '</h6> \
+                         <a href = "/upcoming_exams/'+ child.user +
+                            '/" class="btn btn-primary"> Upcoming Exams </a> \
+                         </div> </div></div>'
+                        );
+                    })
+
+                }
+            } //end success
+        }); //end ajax
+    }
+    );
+</script>
+
+{% endblock %}

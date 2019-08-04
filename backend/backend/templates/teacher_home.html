@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+
+
+<div class="row">
+
+    <div class="col-md-2.5">
+
+        <div class="card mb-2">
+            <div class="card-body">
+
+                <a href="/upcoming_exams/{{user.pk}}" class=" btn btn-primary">
+
+                    Upcoming exams
+
+                </a>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="col-md-2.5">
+
+        <div class="card mb-2">
+            <div class="card-body">
+
+                <a href="/create_attendance/" class=" btn btn-primary">
+
+                    Attendance    
+
+                </a>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="col-md-2.5">
+
+        <div class="card mb-2">
+            <div class="card-body">
+
+                <a href="/create_exam/{{user.pk}}" class=" btn btn-primary">
+
+                    Create Exam     
+                    
+                </a>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    
+
+</div>
+
+
+
+{% endblock %}

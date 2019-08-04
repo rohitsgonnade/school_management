@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h5> Upcoming exams</h5> <br/>
+
+<div class="row">
+    {% for exam in exams %}
+    <div class="col-md-5">
+
+        <div class="card mb-3">
+
+            <div class="card-body">
+
+                <h5 class="card-title">{{ exam.name }}</h5>
+
+                <p class="card-text"> Date : {{ exam.exam_date }}</p>
+                <p class="card-text">Subject : {{ exam.subject }}</p>
+                <p class="card-text">Time : {{ exam.exam_time }}</p>
+                <p class="card-text">Marks : {{ exam.max_marks }}</p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    {% endfor %}
+</div>
+
+
+{%endblock%}

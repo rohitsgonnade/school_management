@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h5> Unchecked the absent students  </h5>
+<form action="" method="post" id = "my_form">
+
+    {% csrf_token %}
+    <div class="form-group">
+        {{ form }}
+    </div>
+
+  
+
+    <div class="form-group">
+        <input type="hidden" id="error_text" readonly />
+    </div>
+    <button type="submit" class="btn btn-primary">Save Attendance</button>
+
+</form>
+
+{% endblock %}
+
+{% block javascript %}
+
+<script>
+    $("my_form").submit(function () {
+
+        //   function getChild() {
+        var username = "{{ user.get_username}}"
+
+        var subject = "{{ subject }}"  // passes by view create_attendance_api
+
+        
+
+        console.log("click");
+
+        $.ajax({
+            type: "POST",
+            url: "/save_attendance/" + subject,  //  I want to use reverse url lookup like {url 'xyz' } but it is throwing errors saying 'xyz' is not a view
+         
+
+            success: function (json) {
+                if (json.length == 0) {
+
+                    $("#error_text").val("Some error occured.")
+                }
+            } //end success
+        }); //end ajax
+    }
+    );
+</script>
+
+{% endblock %}
