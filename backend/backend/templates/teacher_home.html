@@ -28,9 +28,9 @@
         <div class="card mb-2">
             <div class="card-body">
 
-                <a href="/create_attendance/" class=" btn btn-primary">
+                <a href="{% url 'new_attendance' %}" class=" btn btn-primary">
 
-                    Attendance    
+                    Create Attendance
 
                 </a>
 
@@ -47,8 +47,8 @@
 
                 <a href="/create_exam/{{user.pk}}" class=" btn btn-primary">
 
-                    Create Exam     
-                    
+                    Create Exam
+
                 </a>
 
             </div>
@@ -64,8 +64,8 @@
 
                 <a href="/subjects/{{ user.pk }}" class=" btn btn-primary">
 
-                    Save Exam Marks
-                    
+                    Save Exam & Previous Attendance
+
                 </a>
 
             </div>

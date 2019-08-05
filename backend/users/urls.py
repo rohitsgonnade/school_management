@@ -25,7 +25,7 @@ urlpatterns = [
     path("upcoming_exams/<int:pk>/", get_upcoming_exams, name = 'upcoming_exams'),
     path("create_exam/<int:pk>", create_exam_API),
     path("save_attendance/<str:pk>", student_attendance_view, name = "save_attendance"),
-    path("create_attendance/", create_attendance_API),
+    path("new_attendance/", create_attendance_API, name = "new_attendance"),
     path("save_marks/<str:pk>", save_marks_view),
     path("subjects/<int:pk>", get_subjects),
 
