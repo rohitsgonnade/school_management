@@ -1,4 +1,6 @@
- Entities and their functionality
+View the ERD first
+
+Entities and their functionality
  
 1. Teacher :
     After login :
