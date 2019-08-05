@@ -2,6 +2,8 @@ from django import forms
 from .models import Subject, Exam, TeacherProfile, User, Teacher_Subject, StudentProfile, Student_Subject, Attendance, Exam
 from .serializers import TeacherProfileSerializer
 
+import datetime
+
 #not used
 class Exam_ModelForm(forms.ModelForm):
 
@@ -132,11 +134,15 @@ class save_marks_form(forms.Form):
         students = StudentProfile.objects.filter(
             user__in = Student_Subject.objects.filter(subject_id = self.subject_id).values('student_id'))
         
-        self.fields['exam_id'].queryset = Exam.objects.filter(subject_id = self.subject_id).order_by("-exam_date") 
+        today = datetime.date.today()
+
+        self.fields['exam_id'].queryset = Exam.objects.filter(subject_id = self.subject_id, exam_date__lte=today).order_by("-exam_date") 
 
 
         #dynamically create Integer field for each student
+        #I don't know how to add maximum validation
+        #also if again we try to enter marks for the same exam, I must not allowed that. That also I dnt know how to do
         for st in students:
-            self.fields[str(st)] = forms.IntegerField(required = True, initial = 0)
+            self.fields[str(st)] = forms.IntegerField(required = True, initial = 0, min_value= 0)
 
         
