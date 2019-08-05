@@ -2,10 +2,11 @@
 
 {% block content %}
 
-<h5> Upcoming exams</h5> <br/>
+<h5> Upcoming exams</h5> <br />
 
 <div class="row">
-    {% for exam in exams %}
+    {% if exams|length > 0 %}
+    {% for exam in exams%}
     <div class="col-md-5">
 
         <div class="card mb-3">
@@ -26,6 +27,22 @@
     </div>
 
     {% endfor %}
+    {% else %}
+    <div class="col-md-5">
+
+            <div class="card mb-3">
+    
+                <div class="card-body">
+    
+                    <h5 class="card-title">No Exams To display</h5>
+
+    
+                </div>
+    
+            </div>
+    
+        </div>
+    {% endif %}
 </div>
 
 
